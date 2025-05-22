@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor's Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/css_medecin/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    {% comment %} calendier JavaScript (Calendar js) {% endcomment %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="{% url 'ProfilMedecin' id=user.id %}" style="text-decoration: none;">
+                <div class="sidebar-header">
+                    {% if user.image == 'https://urls.fr/Q2tGOp' %}
+                        <img src="{{user.image}}" alt="Doctor's profile" class="profile-img">
+                    {% else %}
+                        <img src="{{user.image.url}}" alt="Doctor's profile" class="profile-img">
+                    {% endif %}
+                    <div class="doctor-info">
+                        <h2>{{user.nom}} {{user.prenom}}</h2>
+                        <span class="department">{{user.profession}}</span>
+                    </div>
+                </div>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="{% url 'homePageMedecin' %}" class="active"><i class="fas fa-home"></i> Acceuil</a>
+                <a href="{% url 'homelistRendezvous' %}"><i class="fas fa-calendar-alt"></i> Rendez-vous</a>
+                <a href="{% url 'homelistPatient' %}"><i class="fas fa-users"></i> Patients</a>
+                <a href="{% url 'messageToSecretaire' %}"><i class="fa-solid fa-envelope"></i> Messages Secretaires</a>
+                <a href="{% url 'chat_admin_medecin' %}"><i class="fa-solid fa-envelope"></i> Messages Administration</a>
+                <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Deconnexion</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-grid">
+                <section class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #e3f2fd;">
+                            <i class="fas fa-user-clock" style="color: #1976d2;"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Nombre de Patients Aujourd'hui</h3>
+                            <p class="stat-number">{{rendezVousAujourdhui}}</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #e8f5e9;">
+                            <i class="fas fa-check-circle" style="color: #43a047;"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Rendez-vous validé</h3>
+                            <p class="stat-number">{{rendezVousValide}}</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #fff3e0;">
+                            <i class="fas fa-hourglass-half" style="color: #ff9800;"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>En cours</h3>
+                            <p class="stat-number">{{rendezVousEnCours}}</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: #fce4ec;">
+                            <i class="fas fa-calendar" style="color: #e91e63;"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Total des Rendez-vous</h3>
+                            <p class="stat-number">{{nombreRendezVous}}</p>
+                        </div>
+                    </div>
+                </section>
+                <section class="calendar-section">
+                    <div class="section-header">
+                        <h2>Calendrier</h2>
+                    </div>
+                    <div id="calendar">
+                    </div>
+                </section>
+                <section class="recent-appointments">
+                    <div class="section-header">
+                        <h2>Rendez-vous Récents</h2>
+                        <a class="btn-text" href='{% url 'homelistRendezvous' %}' style="text-decoration: none;">Voir tout</a>
+                    </div>
+                    <div class="appointments-list">
+                        {% for rendezVousR in rendezVousRecents %}
+                            <a href="{% url 'detailRendezVous' id=rendezVousR.id %}" style="text-decoration: none;">
+                                <div class="appointment-item">
+                                    <img src="https://tse1.mm.bing.net/th/id/OIP.CfgdaL_-Snp8xuEZyU4aZgHaHa?rs=1&pid=ImgDetMain" alt="Patient" class="patient-img">
+                                    <div class="appointment-details">
+                                        <h4>{{rendezVousR.titreRendezVous}}</h4>
+                                        <p>{{rendezVousR.dateRendezVous}}</p>
+                                    </div>
+                                    <div class="appointment-status pending">{{rendezVousR.statut}}</div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script>
+        let rendezVous = JSON.parse('{{ rendezVous_json|escapejs }}');
+            $(document).ready(function() {
+                $('#calendar').fullCalendar({
+                    header:{
+                        left:"month, agendaWeek, agendaDay,list",
+                        center:'title'
+                    },
+                    events:rendezVous
+                });
+            });
+    </script>
+</body>
+</html>

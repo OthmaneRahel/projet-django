@@ -1,0 +1,303 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinique - Liste des Médecins</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Police Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% comment %} <link rel="stylesheet" href="{% static 'css/style.css' %}"> {% endcomment %}
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7ff;
+            color: var(--dark);
+            margin-top: 80px; /* Compensation pour la navbar fixe */
+        }
+        
+        .hero-section {
+            padding: 80px 0 40px;
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            color: white;
+        }
+        
+        .page-title {
+            font-weight: 700;
+            margin-bottom: 30px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .page-title:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 60px;
+            height: 4px;
+            background: white;
+            border-radius: 2px;
+        }
+        
+        .doctor-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            background: white;
+        }
+        
+        .doctor-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .doctor-img {
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .doctor-card:hover .doctor-img {
+            transform: scale(1.05);
+        }
+        
+        .specialty-badge {
+            background-color: var(--primary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .doctor-info {
+            padding: 20px;
+        }
+        
+        .doctor-name {
+            font-weight: 600;
+            color: var(--dark);
+            margin: 10px 0 5px;
+        }
+        
+        .doctor-contact {
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+        
+        .doctor-contact i {
+            margin-right: 8px;
+            color: var(--primary);
+        }
+        
+        .action-btn {
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 500;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-detail {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-detail:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-appointment {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-appointment:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .col-lg-4 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .col-lg-4, .col-md-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+        .header {
+            background: white;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+        
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .main-nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .main-nav a:hover {
+            color: var(--primary-color);
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .phone-link {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .lang-switch {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar originale -->
+    <header class="header">
+        <div class="container">
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'home' %}">Home Page</a></li>
+                    {% if user.is_authenticated == False %}
+                        <li><a href="{% url 'loginvalidation' %}">Sign In</a></li>
+                    {% else %}
+                        <li><a href="{% url 'logout' %}">Deconnexion</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="tel:0525250120" class="phone-link">
+                    <i class="fas fa-phone"></i>
+                </a>
+                {% if user.is_authenticated == True %}
+                    <a href="{% url 'profilPatient' user.id %}" style="text-decoration: none;color: black;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            {% if user.image == 'https://urls.fr/Q2tGOp' %}
+                                <img src="{{ user.image }}" style="width: 42px; height: 42px; border-radius: 50%;margin-right: 8px;" alt="">
+                                <span>Bonjour {{user.nom}} {{user.prenom}}</span> 
+                            {% else %}
+                                <img src="{{ user.image.url }}" style="width: 42px; height: 42px; border-radius: 50%;margin-right: 8px;" alt="">
+                                <span>Bonjour {{user.nom}} {{user.prenom}}</span> 
+                            {% endif %}
+                        </div>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="page-title">Nos Spécialistes Médicaux</h1>
+            <p class="lead">Rencontrez notre équipe de professionnels de santé qualifiés et expérimentés</p>
+        </div>
+    </section>
+
+    <!-- Doctors List -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                {% for medecin in medecins %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="doctor-card">
+                        {% if medecin.image == 'https://urls.fr/Q2tGOp' %}
+                            <img src="{{ medecin.image }}" class="doctor-img w-100" alt="Dr. {{ medecin.nom }}">
+                        {% else %}
+                            <img src="{{ medecin.image.url }}" class="doctor-img w-100" alt="Dr. {{ medecin.nom }}">
+                        {% endif %}
+                        <div class="doctor-info text-center">
+                            <span class="specialty-badge">{{ medecin.profession }}</span>
+                            <h3 class="doctor-name mt-3">Dr. {{ medecin.prenom }} {{ medecin.nom }}</h3>
+                            <div class="doctor-contact">
+                                <p><i class="fas fa-envelope"></i> {{ medecin.email }}</p>
+                                <p><i class="fas fa-phone"></i> {{ medecin.numeroTelephone }}</p>
+                            </div>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="{% url 'detail_list_page' medecin_id=medecin.id %}" class="btn btn-detail action-btn">
+                                    <i class="fas fa-info-circle me-1"></i> Détails
+                                </a>
+                                {% if user.is_authenticated %}
+                                <a href="{% url 'formpatient' patient_id=user.id medecin_id=medecin.id %}" class="btn btn-appointment action-btn">
+                                    <i class="fas fa-calendar-check me-1"></i> RDV
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

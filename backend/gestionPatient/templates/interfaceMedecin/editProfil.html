@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer un compte</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="{% static 'css/css_medecin/edit_style.css' %}">
+</head>
+
+<body>
+
+  <div class="register-card">
+    <h2 class="text-center mb-4">Mr.{{medecin.nom}} {{medecin.prenom}}</h2>
+    <form method="post" action="{% url 'editProfil' user.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Image</label>
+          <input type="file" class="form-control" placeholder="Votre nom" name="image" accept="image/*">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Nom</label>
+          <input type="text" class="form-control" placeholder="Votre nom" name="nom" value="{{medecin.nom}}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Prénom</label>
+          <input type="text" class="form-control" placeholder="Votre prénom" name="prenom" value="{{medecin.prenom}}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Numéro Téléphone</label>
+          <input type="text" class="form-control" placeholder="Votre numéro" name="numeroTelephone" value="{{medecin.numeroTelephone}}">
+        </div>
+        
+        <div class="col-md-6">
+          <label class="form-label">Profession</label>
+          <input type="text" class="form-control" placeholder="Votre profession"name="profession" value="{{medecin.profession}}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Salaire</label>
+          <input type="number" class="form-control" placeholder="Votre Salaire" name="salaire" value="{{medecin.salaire}}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Prix Consultation</label>
+          <input type="number" class="form-control" placeholder="Votre Prix de Consultation" name="prix_consultation" value="{{medecin.prix_consultation}}">
+        </div>
+        <div class="col-md-12">
+          <label class="form-label">Adresse</label>
+          <input type="text" class="form-control" placeholder="Votre adresse" name="adresse" value="{{medecin.adresse}}">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success w-100 mt-4">Modifier Votre Profil</button>
+    </form>
+  </div>
+</body>
+</html>

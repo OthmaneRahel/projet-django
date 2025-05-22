@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Médecin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #e6f0ff;
+            --secondary: #6c757d;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --border: #e9ecef;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e9ecef 100%);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            color: var(--dark);
+        }
+        
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+        
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-avatar:hover {
+            transform: scale(1.05);
+        }
+        
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: 1.5rem;
+            color: var(--dark);
+            letter-spacing: -0.5px;
+        }
+        
+        .profile-specialty {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 500;
+            margin-top: 0.5rem;
+            background: var(--primary-light);
+            display: inline-block;
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .section-title i {
+            color: var(--primary);
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        
+        .info-content {
+            flex-grow: 1;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .info-value {
+            color: var(--secondary);
+        }
+        
+        .btn-edit {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+        
+        .btn-edit:hover {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+        
+        .btn-back {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-back:hover {
+            background: #3a56e6;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(67, 97, 238, 0.4);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-name {
+                font-size: 1.75rem;
+            }
+            
+            .profile-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5 profile-container">
+        <div class="profile-header">
+            {% if medecin.image == 'https://urls.fr/Q2tGOp' %}
+                <img src="{{medecin.image}}" alt="Dr. {{medecin.nom}}" class="profile-avatar">
+            {% else %}
+                <img src="{{medecin.image.url}}" alt="Dr. {{medecin.nom}}" class="profile-avatar">
+            {% endif %}
+            <h1 class="profile-name">Dr. {{medecin.nom}} {{medecin.prenom}}</h1>
+            <span class="profile-specialty">{{medecin.profession}}</span>
+        </div>
+        <div class="profile-card">
+            <h2 class="section-title">
+                <i class="fas fa-id-card"></i>
+                Informations de Contact
+            </h2>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <div class="info-content">
+                    <div class="info-label">Téléphone</div>
+                    <div class="info-value">{{medecin.numeroTelephone}}</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="info-content">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">{{medecin.email}}</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="info-content">
+                    <div class="info-label">Adresse</div>
+                    <div class="info-value">{{medecin.adresse}}</div>
+                </div>
+            </div>
+            <a href="{% url 'editProfil' user.id %}" class="btn-edit" style="text-decoration: none;">
+                <i class="fas fa-pencil-alt"></i>
+                Modifier
+            </a>
+        </div>
+        <div class="profile-card">
+            <h2 class="section-title">
+                <i class="fas fa-user-md"></i>
+                À propos
+            </h2> 
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="info-content">
+                    <div class="info-value">
+                        Dr. {{medecin.nom}} {{medecin.prenom}} {{medecin.descriptionMedecin}}
+                    </div>
+                </div>
+            </div>
+            <a href="{% url 'editdescription' medecin.id %}" class="btn-edit" style="text-decoration: none;">
+                <i class="fas fa-pencil-alt"></i>
+                Modifier
+            </a>
+        </div>
+
+        <!-- Bouton retour -->
+        <a href="{% url 'homePageMedecin' %}" class="btn-back" style="text-decoration: none;">
+            <i class="fas fa-arrow-left"></i>
+            Retour au tableau de bord
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

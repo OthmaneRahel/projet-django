@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hopital Login Page</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style_login.css' %}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css">
+    
+</head>
+
+<body>
+    <div class="video-background">
+        <video autoplay muted loop id="myVideo">
+            <source src="https://www.clinique360.com/wp-content/uploads/2024/02/clinique_360_holiday_2.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div class="container" id="main">
+        <div class="Register">
+            <form method="POST" action="{% url 'register' %}">
+                {% csrf_token %}
+                <h1>Create Account</h1>
+                <input type="text" name="nom" placeholder="Nom" required>
+                <input type="text" name="prenom" placeholder="Prenom" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="adresse" placeholder="Votre Addresse" required>
+                <input type="text" name="numtel" placeholder="Votre numero de telephone" required>
+                <input type="text" name="cin" placeholder="Votre Cin" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+        <div class="log-in">
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <div class="alert alert-success">{{ message }}</div>
+                    {% else %}
+                        <div class="alert alert-danger">{{ message }}</div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            <form method="POST" action="{% url 'loginvalidation' %}">
+                {% csrf_token %}
+                <h1>LOGIN PAGE</h1>
+                <input type="email" name="email" placeholder="Votre Email" required>
+                <input type="password" name="password" placeholder="Votre Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-left">
+                    <img src="https://www.clinique360.com/wp-content/uploads/2024/03/sante-mental.svg">
+                    <p>Kindly Login to Experince More Features</p>
+                    <button id="signIn">LOGIN</button>
+                </div>
+                <div class="overlay-right">
+                    <h1>JOIN US</h1>
+                    <img class="imgs" src="https://www.clinique360.com/wp-content/uploads/2023/04/medecin-famille.svg  ">
+                    <p>Start a Healthy Journey With Us </p>
+                    <button id="signUp">Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        const signUpButton = document.getElementById('signUp');
+        const signInButton = document.getElementById('signIn');
+        const main = document.getElementById('main');
+
+        signUpButton.addEventListener('click', () => {
+            main.classList.add("right-panel-active");
+        });
+        signInButton.addEventListener('click', () => {
+            main.classList.remove("right-panel-active");
+        });
+    </script>
+</body>
+
+</html>

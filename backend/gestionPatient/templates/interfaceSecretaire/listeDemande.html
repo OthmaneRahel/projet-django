@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Médecins</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #f8f9fc;
+            --success: #1cc88a;
+            --info: #36b9cc;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fb;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #e3e6f0;
+            font-weight: 600;
+            color: #4e73df;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+        
+        .table-responsive {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table th {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+        }
+        
+        .table td {
+            vertical-align: middle;
+            padding: 1rem;
+            border-top: 1px solid #e3e6f0;
+        }
+        
+        .table tr:hover {
+            background-color: rgba(78, 115, 223, 0.05);
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 3px;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            padding-left: 40px;
+            border-radius: 20px;
+            border: 1px solid #e3e6f0;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 10px;
+            color: #d1d3e2;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background-color: rgba(28, 200, 138, 0.1);
+            color: var(--success);
+        }
+        
+        .status-inactive {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="h4 mb-0 text-gray-800">Gestion des demandes</h2>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center py-3">
+                        <h6 class="m-0 font-weight-bold">Liste des demandes</h6>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <form action="{% url 'filterdemande' %}" method="post" style="display: flex;">
+                                        {% csrf_token %}
+                                        <input type="text" class="form-control form-control-sm" name="nom" placeholder="Rechercher une demande ....">
+                                        <button type="submit" class="btn btn-success" style=" margin-left: 23px;">Rechercher</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% if messages %}
+                            {% for message in messages %}
+                            {% if message.tags == 'success' %}
+                                <div class="alert alert-success">{{ message }}</div>
+                            {% else %}
+                                <div class="alert alert-danger">{{ message }}</div>
+                            {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Objet de la demande</th>
+                                        <th>Contenu de la demande</th>
+                                        <th>Patient</th>
+                                        <th>Rendez-vous</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for demande in listedemandes %}
+                                        <tr>
+                                            <td>{{demande.objetDemande}}</td>
+                                            {% if demande.bodyDemande == "" %}
+                                                <td>----</td>
+                                            {% else %}
+                                                <td>{{demande.bodyDemande}}</td>
+                                            {% endif %}
+                                            <td>{{demande.patient.nom}} {{demande.patient.prenom}}</td>
+                                            <td>{{demande.rendezvous.titreRendezVous}}</td>
+                                            <td>{{demande.statut}}</td>
+                                            <td>
+                                                {% if demande.statut == "Confirmé" %}
+                                                    <span class="badge bg-success">{{demande.statut}}</span>
+                                                {% else %}
+                                                    <div style="display: flex;">
+                                                        <form action="{% url 'validerdemande' demande.id %}" method="post">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-sm btn-info action-btn text-white" title="valider demande" data-bs-toggle="modal" data-bs-target="#doctorDetailsModal">
+                                                                <i class="fa-solid fa-thumbs-up"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr >
+                                            <td colspan="6" class="text-center">Aucun Demande</td>
+                                        </tr>
+                                    {% endfor %}
+                                    {% if demande %}
+                                        {% for demande in demande %}
+                                            <tr>
+                                                <td>{{demande.objetDemande}}</td>
+                                                {% if demande.bodyDemande == "" %}
+                                                    <td>----</td>
+                                                {% else %}
+                                                    <td>{{demande.bodyDemande}}</td>
+                                                {% endif %}
+                                                <td>{{demande.patient.nom}} {{demande.patient.prenom}}</td>
+                                                <td>{{demande.rendezvous.titreRendezVous}}</td>
+                                                <td>{{demande.statut}}</td>
+                                                <td>
+                                                    {% if demande.statut == "Confirmé" %}
+                                                        <span class="badge bg-success">{{demande.statut}}</span>
+                                                    {% else %}
+                                                        <div style="display: flex;">
+                                                            <form action="{% url 'validerdemande' demande.id %}" method="post">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="btn btn-sm btn-info action-btn text-white" title="valider demande" data-bs-toggle="modal" data-bs-target="#doctorDetailsModal">
+                                                                    <i class="fa-solid fa-thumbs-up"></i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                            <a href="{% url 'homePageSecretaire' %}" class="btn btn-md btn-danger" style="float: right; margin: 23px;">Retour</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

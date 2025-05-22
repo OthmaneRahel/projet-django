@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails du Rendez-vous</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f7fc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .appointment-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .appointment-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1000px;
+            padding: 30px;
+        }
+        .appointment-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .appointment-header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .appointment-header p {
+            font-size: 1.1rem;
+            color: #888;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        .section-content {
+            font-size: 1rem;
+            color: #555;
+        }
+        .section-content strong {
+            color: #333;
+        }
+        .btn-cancel {
+            background-color: #ff3b3b;
+            color: white;
+            border-radius: 8px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            text-align: center;
+            margin-top: 30px;
+            display: block;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        .btn-cancel:hover {
+            background-color: #cc2929;
+        }
+        .btn-reschedule {
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            text-align: center;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        .btn-reschedule:hover {
+            background-color: #0056b3;
+        }
+        .col-left, .col-right {
+            padding: 15px;
+        }
+        @media (max-width: 768px) {
+            .appointment-card {
+                padding: 20px;
+            }
+            .col-left, .col-right {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container appointment-container">
+        <div class="card appointment-card">
+            {{rendezvous.nom}}
+            <div class="appointment-header">
+                <h1>Rendez-vous de {{rendezvous.patient.nom}} {{rendezvous.patient.prenom}}</h1>
+                <p>Type de Rendez-vous : {{rendezvous.titreRendezVous}}</p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 col-left">
+                    <div class="section-title">Détails du Rendez-vous</div>
+                    <div class="section-content">
+                        <p><strong>Date : </strong>{{rendezvous.dateRendezVous}}</p>
+                        <p><strong>Titre Rendez-vous :</strong> {{rendezvous.titreRendezVous}}</p>
+                        <p><strong>A propos de Rendez-vous :</strong> {{rendezvous.descriptionRendezVous}}</p>
+                    </div>
+                </div>
+
+                <!-- Colonne droite : Informations du Patient et Statut -->
+                <div class="col-md-6 col-right">
+                    <div class="section-title">Informations du Patient</div>
+                    <div class="section-content">
+                        <p><strong>Nom Complet : </strong> {{rendezvous.patient.nom}} {{rendezvous.patient.prenom}}</p>
+                        <p><strong>Téléphone : </strong>{{rendezvous.patient.numeroTelephone}}</p>
+                        <p><strong>Email :</strong> {{rendezvous.patient.email}}</p>
+                    </div>
+
+                    <div class="section-title">Statut du Rendez-vous</div>
+                    <div class="section-content">
+                        <p><strong>Statut (Etat) : </strong>{{rendezvous.statut}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Actions</div>
+            <div class="section-content">
+                {% comment %} <a href="{% url 'EnvoyerEmail' %}" class="btn btn-reschedule">Envoyer un Email au Patient</a> {% endcomment %}
+                <a href="{% url 'homePageMedecin' %}" class="btn btn-cancel">Retour a l'acceuil</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

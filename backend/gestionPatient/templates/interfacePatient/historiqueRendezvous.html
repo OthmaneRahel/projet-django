@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historique de Rendez-vous</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #f72585;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .app-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 15px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.15);
+        }
+        
+        .appointment-card {
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .appointment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .appointment-card .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        .appointment-card .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-completed {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success-color);
+        }
+        
+        .status-cancelled {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .status-upcoming {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .appointment-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .appointment-info i {
+            width: 24px;
+            color: var(--primary-color);
+            margin-right: 0.75rem;
+            text-align: center;
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .search-box input {
+            padding-left: 2.5rem;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        
+        .filter-buttons .btn {
+            border-radius: 50px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.85rem;
+        }
+        
+        /* Styles pour les états vides */
+        .empty-state {
+            background-color: white;
+            border-radius: 10px;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            border: 1px dashed rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .empty-state:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: rgba(67, 97, 238, 0.3);
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            color: #dee2e6;
+            margin-bottom: 1.5rem;
+            transition: color 0.3s ease;
+        }
+        
+        .empty-state:hover .empty-state-icon {
+            color: var(--primary-color);
+        }
+        
+        .empty-state h4 {
+            color: var(--dark-color);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .empty-state p {
+            color: #6c757d;
+            max-width: 500px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .empty-state .btn {
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .appointment-card .card-body {
+                padding: 1rem;
+            }
+            
+            .appointment-info {
+                font-size: 0.9rem;
+            }
+            
+            .empty-state {
+                padding: 2rem 1rem;
+            }
+            
+            .empty-state-icon {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0"><i class="far fa-calendar-check me-2"></i> Historique de Rendez-vous</h1>
+                    <p class="mb-0 opacity-75">Consultez tous vos rendez-vous passés et à venir</p>
+                </div>
+            </div>
+        </div>
+        
+        {% if messages %}
+            {% for message in messages %}
+            {% if message.tags == 'success' %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% else %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endif %}
+            {% endfor %}
+        {% endif %}
+            <div class="row">
+                <form action="{% url 'filterrendezvous' %}" method="post" style="display: flex;">
+                    {% csrf_token %}
+                    <div class="col-md-9">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="form-control" name="nom" placeholder="Rechercher un rendez-vous...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="filter-buttons mb-4">
+                            <button type="submit" class="btn btn-outline-primary active mx-3">Rechercher</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+    
+        <div class="filter-buttons mb-4" style="display: flex;">
+            <form action="{% url 'historiqueRendezvous' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary active">Tous</button>
+            </form>
+            <form action="{% url 'rendezvousencour' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary active">En Cours</button>
+            </form>
+            <form action="{% url 'rendezvouscomplet' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary active">Complétés</button>
+            </form>
+        </div>
+        
+        {% for rdv in listeRendezvous %}
+        <div class="appointment-list">
+            <div class="card appointment-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>{{rdv.titreRendezVous}}</span>
+                    <span class="status-badge status-completed"><i class="fas fa-check-circle me-1"></i> {{rdv.statut}}</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="appointment-info">
+                                <i class="fas fa-user-md"></i>
+                                <span>Dr. {{rdv.medecin.nom}} {{rdv.medecin.prenom}}</span>
+                            </div>
+                            <div class="appointment-info">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{rdv.medecin.adresse}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="appointment-info">
+                                <i class="far fa-calendar-alt"></i>
+                                <span>{{rdv.dateRendezVous}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if rdv.statut == "Confirmé" %}
+                    <div class="card-footer bg-transparent border-top-0 text-end">
+                        <a href="{% url 'demandepatient' rdv.id %}" class="btn btn-sm btn-outline-primary me-2">
+                            <i class="far fa-eye me-1"></i> Demander un document
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if rendezVousValide %}
+            {% if rendezVousValide|length != 0 %}
+                {% for rdv in rendezVousValide %}
+                    <div class="appointment-list">
+                        <div class="card appointment-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>{{rdv.titreRendezVous}}</span>
+                                <span class="status-badge status-completed"><i class="fas fa-check-circle me-1"></i> {{rdv.statut}}</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="appointment-info">
+                                            <i class="fas fa-user-md"></i>
+                                            <span>Dr. {{rdv.medecin.nom}} {{rdv.medecin.prenom}}</span>
+                                        </div>
+                                        <div class="appointment-info">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>{{rdv.medecin.adresse}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="appointment-info">
+                                            <i class="far fa-calendar-alt"></i>
+                                            <span>{{rdv.dateRendezVous}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if rdv.statut == "Confirmé" %}
+                                <div class="card-footer bg-transparent border-top-0 text-end">
+                                    <a href="{% url 'demandepatient' rdv.id %}" class="btn btn-sm btn-outline-primary me-2">
+                                        <i class="far fa-eye me-1"></i> Demander un document
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h4>Aucun rendez-vous validé</h4>
+                    <p>Vous n'avez pas encore de rendez-vous confirmés dans votre historique.</p>
+                    <a href="{% url 'prendrerdv' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Prendre un rendez-vous
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
+        
+        {% if rendezvousencours %}
+            {% if rendezvousencours|length != 0 %}
+                {% for rdv in rendezvousencours %}
+                    <div class="appointment-list">
+                        <div class="card appointment-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>{{rdv.titreRendezVous}}</span>
+                                <span class="status-badge status-upcoming"><i class="fas fa-clock me-1"></i> {{rdv.statut}}</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="appointment-info">
+                                            <i class="fas fa-user-md"></i>
+                                            <span>Dr. {{rdv.medecin.nom}} {{rdv.medecin.prenom}}</span>
+                                        </div>
+                                        <div class="appointment-info">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>{{rdv.medecin.adresse}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="appointment-info">
+                                            <i class="far fa-calendar-alt"></i>
+                                            <span>{{rdv.dateRendezVous}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-calendar-times"></i>
+                    </div>
+                    <h4>Aucun rendez-vous en cours</h4>
+                    <p>Vous n'avez actuellement aucun rendez-vous en attente de confirmation.</p>
+                    <a href="{% url 'prendrerdv' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Prendre un rendez-vous
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
+        
+        {% if not listeRendezvous and not rendezVousValide and not rendezvousencours and not rendezvous %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h4>Aucun rendez-vous enregistré</h4>
+                <p>Vous n'avez pas encore de rendez-vous dans votre historique.</p>
+                <a href="{% url 'medecin_list_page' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Prendre un rendez-vous
+                </a>
+            </div>
+        {% endif %}
+
+        {% if rendezvous %}
+            {% if rendezvous|length != 0 %}
+                {% for rdv in rendezvous %}
+                    <div class="appointment-list">
+                        <div class="card appointment-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>{{rdv.titreRendezVous}}</span>
+                                <span class="status-badge status-completed"><i class="fas fa-check-circle me-1"></i> {{rdv.statut}}</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="appointment-info">
+                                            <i class="fas fa-user-md"></i>
+                                            <span>Dr. {{rdv.medecin.nom}} {{rdv.medecin.prenom}}</span>
+                                        </div>
+                                        <div class="appointment-info">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>{{rdv.medecin.adresse}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="appointment-info">
+                                            <i class="far fa-calendar-alt"></i>
+                                            <span>{{rdv.dateRendezVous}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if rdv.statut == "Confirmé" %}
+                                <div class="card-footer bg-transparent border-top-0 text-end">
+                                    <a href="{% url 'demandepatient' rdv.id %}" class="btn btn-sm btn-outline-primary me-2">
+                                        <i class="far fa-eye me-1"></i> Demander un document
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h4>Aucun rendez-vous validé</h4>
+                    <p>Vous n'avez pas encore de rendez-vous confirmés dans votre historique.</p>
+                    <a href="{% url 'prendrerdv' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Prendre un rendez-vous
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
+        
+        <div class="filter-buttons mb-4">
+            <a href="{% url 'profilPatient' user.id %}" class="btn btn-outline-danger float-right">Retour au profil</a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Détail du Patient</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f8fafc;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .card-profile {
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      background: white;
+    }
+    .profile-img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 5px solid white;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    .profile-img:hover {
+      transform: scale(1.05);
+    }
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+      padding: 8px 15px;
+      border-radius: 10px;
+      background: rgba(13, 110, 253, 0.05);
+    }
+    .info-item i {
+      color: #0d6efd;
+      font-size: 1.3rem;
+      min-width: 25px;
+    }
+    .consultation-card {
+      border-left: 4px solid #0d6efd;
+      border-radius: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-bottom: 15px;
+    }
+    .consultation-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .badge-status {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+    .section-title {
+      position: relative;
+      padding-bottom: 10px;
+      margin-bottom: 25px;
+    }
+    .section-title:after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(90deg, #0d6efd, rgba(13, 110, 253, 0.3));
+      border-radius: 3px;
+    }
+    .btn-soft-primary {
+      background: rgba(13, 110, 253, 0.1);
+      color: #0d6efd;
+      border: none;
+    }
+    .btn-soft-primary:hover {
+      background: rgba(13, 110, 253, 0.2);
+      color: #0d6efd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card card-profile p-4 mb-5">
+          <div class="text-center">
+            {% if patient.image == 'https://urls.fr/Q2tGOp' %}
+            <img src="{{patient.image}}" alt="Photo Patient" class="profile-img mb-3">
+            {% else %}
+            <img src="{{patient.image.url}}" alt="Photo Patient" class="profile-img mb-3">
+            {% endif %}
+
+            <h3 class="mb-1">{{ patient.nom }} {{ patient.prenom }}</h3>
+          </div>
+          
+          <hr class="my-4">
+          
+          <div class="px-3 mt-3">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="info-item">
+                  <i class="bi bi-envelope"></i>
+                  <span>Email : <strong>{{ patient.email }}</strong></span>
+                </div>
+                <div class="info-item">
+                  <i class="bi bi-phone"></i>
+                  <span>Téléphone : <strong>{{ patient.numeroTelephone }}</strong></span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-item">
+                  <i class="bi bi-person-badge"></i>
+                  <span>CIN : <strong>{{ patient.cin }}</strong></span>
+                </div>
+                <div class="info-item">
+                  <i class="bi bi-geo-alt"></i>
+                  <span>Adresse : <strong>{{ patient.adresse }}</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="text-center mt-4">
+            <a href="{% url 'homelistPatient' %}" class="btn btn-soft-primary me-2">
+              <i class="bi bi-arrow-left"></i> Retour à la liste
+            </a>
+          </div>
+        </div>
+        
+        <!-- Section des consultations -->
+        <div class="card card-profile p-4">
+          <h4 class="section-title">Historique des consultations</h4>
+          
+          {% if consultations %}
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date</th>
+                    <th>Médecin</th>
+                    <th>Description</th>
+                    <th>Prix</th>
+                    <th>Statut</th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for consultation in consultations %}
+                  <tr>
+                    <td>
+                      <i class="bi bi-calendar-date me-2"></i>
+                      {{ consultation.date_rapport|date:"d/m/Y" }}
+                    </td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        {% if consultation.medecin.image == "https://urls.fr/Q2tGOp" %}
+                          <img src="{{ consultation.medecin.image }}" alt="Médecin" width="35" height="35" class="rounded-circle me-2">
+                          Dr. {{ consultation.medecin.prenom }} {{ consultation.medecin.nom }}
+                        {% else %}
+                          <img src="{{ consultation.medecin.image.url }}" alt="Médecin" width="35" height="35" class="rounded-circle me-2">
+                          Dr. {{ consultation.medecin.prenom }} {{ consultation.medecin.nom }}
+                        {% endif %}
+                      </div>
+                    </td>
+                    <td>{{ consultation.description|truncatechars:50 }}</td>
+                    <td>
+                      {{consultation.prix}}
+                    </td>
+                    <td>
+                      <span class="badge bg-success bg-opacity-10 text-success badge-status">
+                        <i class="bi bi-check-circle-fill me-1"></i> Terminée
+                      </span>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="text-center py-5">
+              <i class="bi bi-clipboard2-x" style="font-size: 3rem; color: #adb5bd;"></i>
+              <h5 class="mt-3">Aucune consultation enregistrée</h5>
+              <p class="text-muted">Ce patient n'a pas encore de consultation</p>
+              {% comment %} <a href="#" class="btn btn-primary mt-2">
+                <i class="bi bi-plus-circle"></i> Planifier une consultation
+              </a> {% endcomment %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

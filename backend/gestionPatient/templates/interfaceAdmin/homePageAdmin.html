@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Simple</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/css_admin/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-brand">Tableau de bord</a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="{% url 'homepageadmin' %}" class="menu-item active">
+                <i class="fas fa-home"></i>
+                <span>Acceuil</span>
+            </a>
+            <a href="{% url 'listeMedecinAdmin' %}" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>Medecins</span>
+            </a>
+            <a href="{% url 'listesecretaire' %}" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>Secretaires</span>
+            </a>
+            <a href="{% url 'messageEntreAdmintosecretaire' %}" class="menu-item">
+                <i class="fa-solid fa-envelope"></i>
+                <span>Messages Secretaires</span>
+            </a>
+            <a href="{% url 'messageEntreAdmintomedecin' %}" class="menu-item">
+                <i class="fa-solid fa-envelope"></i>
+                <span>Messages Medecins</span>
+            </a>
+            <a href="{% url 'logout' %}" class="menu-item">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Deconnexion</span>
+            </a>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="topbar">
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="user-menu">
+                    <a href="{% url 'profileadmin' user.id %}" style="display: flex;text-decoration: none;color: black;align-items: center;">
+                        <div class="user-avatar">
+                            {% if user.image == 'https://urls.fr/Q2tGOp' %}
+                                <img src="{{ user.image }}" style="width: 42px; height: 42px; border-radius: 50%;margin-right: 8px;" alt="">
+                            {% else %}
+                                <img src="{{ user.image.url }}" style="width: 42px; height: 42px; border-radius: 50%;margin-right: 8px;" alt="">
+                            {% endif %}
+                        </div>
+                        <span class="user-name">{{user.nom}} {{user.prenom}}</span>
+                    </a>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div class="row mb-4">
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <div class="card stat-card">
+                        <div class="stat-icon" style="background-color: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="stat-value">{{nombrepatients}}</h3>
+                        <p class="stat-title">Nombre de Patients</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <div class="card stat-card">
+                        <div class="stat-icon" style="background-color: rgba(16, 185, 129, 0.1); color: #10b981;">
+                            <i class="fa-regular fa-calendar-check" style="color: #63E6BE;"></i>
+                        </div>
+                        <h3 class="stat-value">{{nombrerendezvous}}</h3>
+                        <p class="stat-title">Nombre de Rendez-vous</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <div class="card stat-card">
+                        <div class="stat-icon" style="background-color: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                            <i class="fa-regular fa-calendar-check" style="color: #ff5252;"></i>
+                        </div>
+                        <h3 class="stat-value">{{nombresecretaire}}</h3>
+                        <p class="stat-title">Nombre de Secretaires</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <div class="card stat-card">
+                        <div class="stat-icon" style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                            <i class="fa-solid fa-users" style="color: #ff4d4d;"></i>
+                        </div>
+                        <h3 class="stat-value">{{nombremedecin}}</h3>
+                        <p class="stat-title">Nombre de Medecins</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            Calendier
+                        </div>
+                        <div class="card-body">
+                            <div id="calendar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let rendezVous = JSON.parse('{{ rendezVous_json|escapejs }}');
+            $(document).ready(function() {
+                $('#calendar').fullCalendar({
+                    header:{
+                        left:"month, agendaWeek, agendaDay,list",
+                        center:'title'
+                    },
+                    events:rendezVous
+                });
+            });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

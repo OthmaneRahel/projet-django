@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport de Rendez-vous Médical</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .consultation-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background-color: #4e73df;
+            color: white;
+            padding: 1rem 1.5rem;
+        }
+        
+        .form-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            color: #4e73df;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e3e6f0;
+        }
+        
+        .btn-save {
+            background-color: #4e73df;
+            border-color: #4e73df;
+        }
+        
+        .btn-back {
+            background-color: #858796;
+            border-color: #858796;
+        }
+        
+        .btn-save:hover, .btn-back:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card consultation-card">
+                    <div class="card-header">
+                        <h3 class="mb-0">Nouveau Rapport de Consultation</h3>
+                    </div>
+                    
+                    <div class="card-body">
+                        <form action="{% url 'rapportMedical' listRendezvous.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-section">
+                                <h5 class="section-title">Informations Patient</h5>
+                                <div class="mb-3">
+                                    <label for="patient" class="form-label">Patient</label>
+                                    <input type="text" name="nomPatient" class="form-control" value="{{listRendezvous.patient.nom}} {{listRendezvous.patient.prenom}}" readonly>
+                                    <input type="hidden" name="patient_id" class="form-control" value="{{listRendezvous.patient_id}}">
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <h5 class="section-title">Détails de la Consultation</h5>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description détaillée</label>
+                                    <textarea id="description" name="description" class="form-control" rows="5" placeholder="Notes sur la consultation, observations, diagnostic..."></textarea>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="prix" class="form-label">Prix de la consultation (DH)</label>
+                                        <input type="number" id="prix" name="prix" class="form-control" step="0.01" min="0" placeholder="25.00" value="{{user.prix_consultation}}" readonly>
+                                    </div>
+                                    {% comment %} <div class="col-md-6 mb-3">
+                                        <label for="statut" class="form-label">Statut du paiement</label>
+                                        <select id="statut" name="statut" class="form-select">
+                                            <option value="payé">Payé</option>
+                                            <option value="en attente">En attente</option>
+                                            <option value="non payé">Non payé</option>
+                                        </select>
+                                    </div> {% endcomment %}
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="{% url 'homelistRendezvous' %}" class="btn btn-back text-white">
+                                    ← Retour
+                                </a>
+                                <button type="submit" class="btn btn-save text-white">
+                                    Enregistrer le rapport
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

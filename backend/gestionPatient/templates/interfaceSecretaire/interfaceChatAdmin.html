@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Messagerie Administrateur</title>
+    <link rel="stylesheet" href="{% static 'css/css_secretaire/chat.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+</head>
+<body>
+<div class="chat-interface">
+    <aside class="sidebar">
+        <h2>Administrateur</h2>
+        <ul class="doctor-list">
+            {% for admin in listAdmin %}
+                <li class="doctor-item">
+                    <a href="{% url 'chat_actif_admin_secretaire' admin_id=admin.id %}">
+                        {% if admin.image == 'https://urls.fr/Q2tGOp' %}
+                            <img src="{{admin.image}}" alt="" width="15px"> Adm {{ admin.nom }} {{admin.prenom}}
+                        {% else %}
+                            <img src="{{admin.image.url}}" alt="" width="15px"> Adm {{ admin.nom }} {{admin.prenom}}
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+            <li class="doctor-item">
+                <a href="{% url 'homePageSecretaire' %}">Retour Au Dashboard</a>
+            </li>
+        </ul>
+    </aside>
+    <main class="chat-section">
+        <header class="chat-header">
+            {% if admin_actif %}
+                <h3>Conversation avec l'admin. {{ admin_actif.nom }}</h3>
+            {% else %}
+                <h3>Choisissez un Administrateur</h3>
+            {% endif %}
+        </header>
+        <div class="chat-messages">
+            {% for msg in messagesM %}
+                {% if msg.source == request.user.nom %}
+                    <div class="message sent">
+                        <h3 style="padding-bottom: 10px;">Moi</h3>
+                        <p>{{ msg.message }}</p>
+                        <small style="float: right;">Envoyé à {{ msg.date_denvoi|date }}</small>
+                    </div>
+                {% else %}
+                    <div class="message received">
+                        <div style="display: flex; justify-content: space-between;">
+                            <h3 style="padding-bottom: 10px;margin: 0;">{{ msg.source|title }}</h3>
+                        </div>
+                        <p>{{ msg.message }}</p>
+                        <small style="float: right;">Envoyé à {{ msg.date_denvoi|date }}</small>
+                    </div>
+                {% endif %}
+            {% empty %}
+                <p class="no-message">Écrivez votre premier message</p>
+            {% endfor %}
+        </div>        
+        {% if admin_actif %}
+        <form method="post" action="{% url 'chat_admin_sec' %}" class="message-form">
+            {% csrf_token %}
+            <input type="hidden" name="admin_id" value="{{ admin_actif.id }}">
+            <input type="hidden" name="destination" value="{{ admin_actif.nom }} {{admin_actif.prenom}}">
+            <input type="text" name="message" placeholder="Écrire un message..." required>
+            <button type="submit">Envoyer</button>
+        </form>
+        {% endif %}
+    </main>
+</div>
+</body>
+</html>

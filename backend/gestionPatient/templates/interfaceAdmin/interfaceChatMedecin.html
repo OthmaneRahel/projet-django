@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Messagerie Secrétaire</title>
+    <link rel="stylesheet" href="{% static 'css/css_secretaire/chat.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="chat-interface">
+    <aside class="sidebar">
+        <h2>Médecins</h2>
+        <ul class="doctor-list">
+            {% for medecin in listeMedecin %}
+                <li class="doctor-item">
+                    <a href="{% url 'chat_actif_admin_medecin' medecin_id=medecin.id %}">
+                        {% if medecin.image == 'https://urls.fr/Q2tGOp' %}
+                            <img src="{{medecin.image}}" alt="" width="15px"> Dr. {{ medecin.nom }} {{medecin.prenom}}
+                        {% else %}
+                            <img src="{{medecin.image.url}}" alt="" width="15px"> Dr. {{ medecin.nom }} {{medecin.prenom}}
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+            <li class="doctor-item">
+                <a href="{% url 'homepageadmin' %}">Retour Au Dashboard</a>
+            </li>
+        </ul>
+    </aside>
+    <main class="chat-section">
+        <header class="chat-header">
+            {% if medecin_actif %}
+                <h3>Conversation avec Dr. {{ medecin_actif.nom }}</h3>
+            {% else %}
+                <h3>Choisissez un médecin</h3>
+            {% endif %}
+        </header>
+        <div class="chat-messages">
+            {% for msg in messagesM %}
+                {% if msg.source == request.user.nom %}
+                    <div class="message sent">
+                        <h3 style="padding-bottom: 10px;">Moi</h3>
+                        <p>{{ msg.message }}</p>
+                        <small style="float: right;">Envoyé à {{ msg.date_denvoi|date:"H:i" }}</small>
+                    </div>
+                {% else %}
+                    <div class="message received">
+                        <div style="display: flex; justify-content: space-between;">
+                            <h3 style="padding-bottom: 10px;margin: 0;">{{ msg.source|title }}</h3>
+                        </div>
+                        <p>{{ msg.message }}</p>
+                        <small style="float: right;">Envoyé à {{ msg.date_denvoi|date }}</small>
+                    </div>
+                {% endif %}
+            {% empty %}
+                <p class="no-message">Écrivez votre premier message</p>
+            {% endfor %}
+        </div>
+        
+
+        {% if medecin_actif %}
+        <form method="post" action="{% url 'messageEntreAdmintomedecin' %}" class="message-form">
+            {% csrf_token %}
+            <input type="hidden" name="medecin_id" value="{{ medecin_actif.id }}">
+            <input type="hidden" name="destination" value="{{ medecin_actif.nom }} {{medecin_actif.prenom}}">
+            <input type="text" name="message" placeholder="Écrire un message..." required>
+            <button type="submit">Envoyer</button>
+        </form>
+        {% endif %}
+    </main>
+</div>
+</body>
+</html>

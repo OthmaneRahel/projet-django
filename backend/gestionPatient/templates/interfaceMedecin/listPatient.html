@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Liste des Patients</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-light: #e6f0ff;
+      --secondary: #6c757d;
+      --success: #2ecc71;
+      --info: #00b4d8;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --text-muted: #6c757d;
+      --border: #e9ecef;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background-color: #f5f7fb;
+      color: var(--dark);
+      padding: 2rem 1rem;
+    }
+    
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+    }
+    
+    .card-header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1.25rem 1.5rem;
+      border-bottom: none;
+    }
+    
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 0;
+    }
+    
+    .table-responsive {
+      border-radius: 0 0 12px 12px;
+    }
+    
+    .table {
+      margin-bottom: 0;
+      color: var(--dark);
+    }
+    
+    .table thead {
+      background-color: var(--light);
+      color: var(--dark);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .table th {
+      border-bottom: 2px solid var(--border);
+      padding: 1rem;
+      vertical-align: middle;
+    }
+    
+    .table td {
+      padding: 1.25rem 1rem;
+      vertical-align: middle;
+      border-top: 1px solid var(--border);
+    }
+    
+    .table-hover tbody tr:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .patient-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 12px;
+      border: 2px solid white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .patient-name {
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    .patient-info {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+    
+    .badge-status {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-active {
+      background-color: rgba(46, 204, 113, 0.15);
+      color: var(--success);
+    }
+    
+    .badge-inactive {
+      background-color: rgba(108, 117, 125, 0.15);
+      color: var(--secondary);
+    }
+    
+    .btn-details {
+      background-color: rgba(67, 97, 238, 0.1);
+      color: var(--primary);
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .btn-details:hover {
+      background-color: rgba(67, 97, 238, 0.2);
+      color: var(--primary);
+    }
+    
+    .btn-back {
+      background-color: var(--secondary);
+      color: white;
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    
+    .btn-back:hover {
+      background-color: #5a6268;
+      color: white;
+    }
+    
+    .empty-state {
+      padding: 3rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    
+    .empty-state i {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--border);
+    }
+    
+    @media (max-width: 768px) {
+      .table-responsive {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+      }
+      
+      .table thead {
+        display: none;
+      }
+      
+      .table tr {
+        display: block;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+      
+      .table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: none;
+        padding: 0.75rem;
+      }
+      
+      .table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--dark);
+        margin-right: 1rem;
+        font-size: 0.85rem;
+      }
+      
+      .btn-details {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="{% url 'homePageMedecin' %}" class="btn-back">
+      <i class="fas fa-arrow-left me-2"></i> Retour à l'accueil
+    </a>
+
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="fas fa-users me-2"></i> Liste des Patients
+        </h5>
+      </div>
+      
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Contact</th>
+              <th>Date RDV</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if patients %}
+              {% for patient in patients %}
+              <tr>
+                <td data-label="Patient">
+                  <div class="d-flex align-items-center">
+                    {% if patient.image == "https://urls.fr/Q2tGOp" %}
+                      <img src="{{ patient.image }}" class="patient-avatar" alt="{{ rdv.patient.nom }}">
+                    {% else %}
+                      <img src="{{ patient.image.url }}" class="patient-avatar" alt="{{ rdv.patient.nom }}">
+                    {% endif %}
+                    <div>
+                      <div class="patient-name">{{ patient.nom }} {{ patient.prenom }}</div>
+                      <div class="patient-info">CIN: {{ patient.cin }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td data-label="Contact">
+                  <div class="patient-name">{{ patient.numeroTelephone }}</div>
+                  <div class="patient-info">{{ patient.email|default:"-" }}</div>
+                </td>
+                <td data-label="Date RDV">
+                  <div class="patient-name">{{ patient.dateRendezVous|date:"d/m/Y" }}</div>
+                  <div class="patient-info">{{ patient.dateRendezVous }}</div>
+                </td>
+                <td data-label="Actions">
+                  <a href="{% url 'detailPatient' patient_id=patient.id %}" class="btn btn-details">
+                    <i class="fas fa-eye me-1"></i> Détails
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="5">
+                  <div class="empty-state">
+                    <i class="fas fa-user-injured"></i>
+                    <h5>Aucun patient trouvé</h5>
+                    <p class="mb-0">Aucun patient n'est actuellement enregistré</p>
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="card-footer bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="text-muted small">
+            <strong>{{ patients|length }}</strong> patient(s) trouvé(s)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

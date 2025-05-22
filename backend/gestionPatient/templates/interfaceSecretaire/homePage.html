@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface Secrétaire - Clinique</title>
+    <link rel="stylesheet" href="{% static 'css/css_secretaire/stylesec.css' %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">
+                <h2>Tableau de bord</h2>
+            </div>
+            <ul class="nav-links">
+                <li class="active">
+                    <span class="material-icons">today</span>
+                    <a href="{% url 'homePageSecretaire' %}">Rendez-vous</a>
+                </li>
+                <li>
+                    <span class="material-icons">list</span>
+                    <a href="{% url 'rendezVous' %}">Liste Rendez-vous</a>
+                </li>
+                <li>
+                    <span class="material-icons">chat</span>
+                    <a href="{% url 'chat_admin_sec' %}">Messages Administration</a>
+                </li>
+                <li>
+                    <span class="material-icons">message</span>
+                    <a href="{% url 'messageToMedecin' %}">Messages Medecins</a>
+                </li>
+                <li>
+                    <span class="material-icons">mail</span>
+                    <a href="{% url 'listedemande' %}">Demandes Patients</a>
+                </li>
+                <li>
+                    <span class="material-icons">archive</span>
+                    <a href="{% url 'listearchive' %}">Archive</a>
+                </li>
+                <li>
+                    <span class="material-icons">logout</span>
+                    <a href="{% url 'logout' %}">Deconnexion</a>
+                </li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <header>
+                <h1>Tableau de bord</h1>
+                <div class="user-info">
+                    <a href="{% url 'editProfilsecretaire' user.id %}" style="text-decoration: none;color: black;">
+                        <div style="display: flex;justify-content: space-between;align-items: center;">
+                            {% if user.image == 'https://urls.fr/Q2tGOp' %}
+                                <img src="{{ user.image }}" style="width: 42px; height: 42px; border-radius: 50%;margin-right: 8px;" alt="">
+                                <span>Bonjour {{user.nom}} {{user.prenom}}</span> 
+                            {% else %}
+                                <img src="{{ user.image.url }}" style="width: 42px; height: 42px; border-radius: 50%;margin-right: 8px;" alt="">
+                                <span>Bonjour {{user.nom}} {{user.prenom}}</span> 
+                            {% endif %}
+                            {% comment %} <img src="{{ user.image.url }}" alt="User Image"  style="width: 42px; height: 42px; border-radius: 50%;margin-right: 8px;">
+                            <span>Bonjour {{ user.nom }} {{ user.prenom }}</span> {% endcomment %}
+                        </div>
+                    </a>
+                </div>
+            </header>
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-icon">
+                        <span class="material-icons">calendar_today</span>
+                    </div>
+                    <div class="card-info">
+                        <h3>Rendez-vous aujourd'hui</h3>
+                        <p class="number">{{ rendezVousAujourdhui }}</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">
+                        <span class="material-icons">schedule</span>
+                    </div>
+                    <div class="card-info">
+                        <h3>Total Rendez-vous</h3>
+                        <p class="number">{{nombreRendezVous}}</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">
+                        <span class="material-icons">message</span>
+                    </div>
+                    <div class="card-info">
+                        <h3>Messages non lus</h3>
+                        <p class="number">{{nombreMessageNolu}}</p>
+                    </div>
+                </div>
+            </div>
+            <section class="calendar-section">
+                <h2 style="padding-bottom: 19px;">Planning des rendez-vous</h2>
+                <div id="calendar">
+                    
+                </div>
+            </section>
+    </div>
+</body>
+</html>
+<script>
+    let rendezVous = JSON.parse('{{ rendezVous_json|escapejs }}');
+    console.log(rendezVous[0].start)
+        $(document).ready(function() {
+            $('#calendar').fullCalendar({
+                header:{
+                    left:"month, agendaWeek, agendaDay,list",
+                    center:'title'
+                },
+                events:rendezVous
+            });
+        });
+</script>
